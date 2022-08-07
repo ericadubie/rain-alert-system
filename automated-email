@@ -1,0 +1,213 @@
+#code in this file is code from AWS Lambda function in which it accesses a Weather API, checks rain chance status every hour, and sends an email if it is going to rain
+import json
+
+def lambda_handler(event, context):
+    import smtplib
+    import ssl
+    from email.message import EmailMessage
+    import email
+    from urllib import response
+    import requests
+    import datetime 
+    import pytz
+    import geocoder 
+    
+    # Weather API Code
+    def jprint(obj):
+        text = json.dumps(obj, sort_keys=True, indent=4)
+        print(text)
+        
+    #Date and Time 
+    easternTimeHour = datetime.datetime.now(pytz.timezone('US/Eastern')).hour
+    
+    location = geocoder.ip('me').city
+    
+    
+    key2 = "1c05c9c4e60b4c6e875232739221407"
+
+    parameters = {
+        "key": key2,
+        "q": location, 
+        "hour": easternTimeHour,
+    }
+    
+    response = requests.get("http://api.weatherapi.com/v1/forecast.json", params=parameters).json()
+    
+    rainChance = response.get("forecast").get("forecastday")[0].get("hour")[0].get("chance_of_rain")
+    
+    # Email Code
+    
+    #Set email sender and receiver
+    email_sender = 'ericad124@gmail.com'
+    email_password = 'nsxj ssoq rhwi eoew'
+    email_receiver = 'ericadubie14@gmail.com'
+    
+    #Set subject and body
+    subject = "Rain Alert"
+
+    #Instatiate EmailMessage class
+    em = EmailMessage()
+    em['From'] = email_sender
+    em['To'] = email_receiver
+    em['Subject'] = subject
+    
+    em.set_content('''
+     <!DOCTYPE hmtl>
+     <html>
+         <body>
+            <body style="background-color: #FFFFFF; margin: 0; padding: 0; -webkit-text-size-adjust: none; text-size-adjust: none;">
+                <table border="0" cellpadding="0" cellspacing="0" class="nl-container" role="presentation" style="mso-table-lspace: 0pt; mso-table-rspace: 0pt; background-color: #FFFFFF;" width="100%">
+                <tbody>
+                    <tr>
+                        <td>
+                            <table align="center" border="0" cellpadding="0" cellspacing="0" class="row row-1" role="presentation" style="mso-table-lspace: 0pt; mso-table-rspace: 0pt;" width="100%">
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <table align="center" border="0" cellpadding="0" cellspacing="0" class="row-content stack" role="presentation" style="mso-table-lspace: 0pt; mso-table-rspace: 0pt; border-radius: 0; color: #000000; width: 500px;" width="500">
+                                        <tbody>
+                                            <tr>
+                                                <td class="column column-1" style="mso-table-lspace: 0pt; mso-table-rspace: 0pt; font-weight: 400; text-align: left; vertical-align: top; padding-top: 5px; padding-bottom: 5px; border-top: 0px; border-right: 0px; border-bottom: 0px; border-left: 0px;" width="100%">
+                                                    <table border="0" cellpadding="0" cellspacing="0" class="heading_block block-1" role="presentation" style="mso-table-lspace: 0pt; mso-table-rspace: 0pt;" width="100%">
+                                                        <tbody>
+                                                            <tr>
+                                                             <td class="pad" style="text-align:center;width:100%;">
+                                                                <h1 style="margin: 0; color: #69aad9; direction: ltr; font-family: 'Montserrat', 'Trebuchet MS', 'Lucida Grande', 'Lucida Sans Unicode', 'Lucida Sans', Tahoma, sans-serif; font-size: 23px; font-weight: 700; letter-spacing: 5px; line-height: 120%; text-align: center; margin-top: 0; margin-bottom: 0;"><span class="tinyMce-placeholder">BRING AN UMBRELLA!</span></h1>
+                                                             </td>
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>
+                                                    <table border="0" cellpadding="10" cellspacing="0" class="divider_block block-2" role="presentation" style="mso-table-lspace: 0pt; mso-table-rspace: 0pt;" width="100%">
+                                                        <tbody>
+                                                            <tr>
+                                                                <td class="pad">
+                                                                    <div align="center" class="alignment">
+                                                                        <table border="0" cellpadding="0" cellspacing="0" role="presentation" style="mso-table-lspace: 0pt; mso-table-rspace: 0pt;" width="100%">
+                                                                            <tbody>
+                                                                                <tr>
+                                                                                    <td class="divider_inner" style="font-size: 1px; line-height: 1px; border-top: 1px solid #BBBBBB;"><span> </span></td>
+                                                                                </tr>
+                                                                            </tbody>
+                                                                        </table>
+                                                                    </div>
+                                                                </td>
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>
+                                                <table border="0" cellpadding="0" cellspacing="0" class="image_block block-3" role="presentation" style="mso-table-lspace: 0pt; mso-table-rspace: 0pt;" width="100%">
+                                                    <tbody>
+                                                        <tr>
+                                                            <td class="pad" style="width:100%;padding-right:0px;padding-left:0px;">
+                                                                <div align="center" class="alignment" style="line-height:10px"><img alt="Rain_Image" src="https://media2.giphy.com/media/3ov9jCEFMBtCy54q6Q/giphy.gif?cid=20eb4e9d2cjl4w3dwqwajrohlitje7ymv4kv7etpixjqqe4x&amp;rid=giphy.gif&amp;ct=s" style="display: block; height: auto; border: 0; width: 225px; max-width: 100%;" title="Rain_Image" width="225"></div>
+                                                            </td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                                <table border="0" cellpadding="0" cellspacing="0" class="heading_block block-4" role="presentation" style="mso-table-lspace: 0pt; mso-table-rspace: 0pt;" width="100%">
+                                                    <tbody>
+                                                        <tr>
+                                                            <td class="pad" style="text-align:center;width:100%;">
+                                                                <h1 style="margin: 0; color: #0588d3; direction: ltr; font-family: 'Montserrat', 'Trebuchet MS', 'Lucida Grande', 'Lucida Sans Unicode', 'Lucida Sans', Tahoma, sans-serif; font-size: 23px; font-weight: 400; letter-spacing: 1px; line-height: 120%; text-align: center; margin-top: 0; margin-bottom: 0;"><span class="tinyMce-placeholder">Looks like it's going to rain in your area</span>
+                                                                </h1>
+                                                            </td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                                <table border="0" cellpadding="15" cellspacing="0" class="list_block block-5" role="presentation" style="mso-table-lspace: 0pt; mso-table-rspace: 0pt; word-break: break-word;" width="100%">
+                                                    <tbody>
+                                                        <tr>
+                                                            <td class="pad">
+                                                                <ul start="1" style="margin: 0; padding: 0; list-style-position: inside; list-style-type: revert; color: #7cc4ff; direction: ltr; font-family: 'Montserrat', 'Trebuchet MS', 'Lucida Grande', 'Lucida Sans Unicode', 'Lucida Sans', Tahoma, sans-serif; font-size: 14px; font-weight: 400; letter-spacing: 0px; line-height: 120%; text-align: center;">
+                                                                    <li style="margin-bottom: 1px;">Be sure to bring an umbrella</li>
+                                                                    <li style="margin-bottom: 1px;">Try to stay indoors as much as possible</li>
+                                                                    <li style="margin-bottom: 1px;">Avoid elevated areas</li>
+                                                                    <li>Be careful on the roads!</li>
+                                                                </ul>
+                                                            </td>
+                                                        </tr>
+                                                    </tbody>
+                                                 </table>
+                                                <table border="0" cellpadding="0" cellspacing="0" class="image_block block-6" role="presentation" style="mso-table-lspace: 0pt; mso-table-rspace: 0pt;" width="100%">
+                                                    <tbody>
+                                                        <tr>
+                                                            <td class="pad" style="width:100%;padding-right:0px;padding-left:0px;">
+                                                                <div align="center" class="alignment" style="line-height:10px"><img alt="Umbrella_Image" src="https://media3.giphy.com/media/wuZX6mfGFQgjaJI7TG/giphy.gif?cid=20eb4e9dx0c813pn1g23g4ekm4t67o024mu5toykrf3aqd2t&amp;rid=giphy.gif&amp;ct=s" style="display: block; height: auto; border: 0; width: 200px; max-width: 100%;" title="Umbrella_Image" width="200">
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <table align="center" border="0" cellpadding="0" cellspacing="0" class="row row-2" role="presentation" style="mso-table-lspace: 0pt; mso-table-rspace: 0pt;" width="100%">
+                    <tbody>
+                        <tr>
+                            <td>
+                                <table align="center" border="0" cellpadding="0" cellspacing="0" class="row-content stack" role="presentation" style="mso-table-lspace: 0pt; mso-table-rspace: 0pt; color: #000000; width: 500px;" width="500">
+                                    <tbody>
+                                        <tr>
+                                            <td class="column column-1" style="mso-table-lspace: 0pt; mso-table-rspace: 0pt; font-weight: 400; text-align: left; vertical-align: top; padding-top: 5px; padding-bottom: 5px; border-top: 0px; border-right: 0px; border-bottom: 0px; border-left: 0px;" width="100%">
+                                                <table border="0" cellpadding="0" cellspacing="0" class="icons_block block-1" role="presentation" style="mso-table-lspace: 0pt; mso-table-rspace: 0pt;" width="100%">
+                                                    <tbody>
+                                                        <tr>
+                                                            <td class="pad" style="vertical-align: middle; color: #9d9d9d; font-family: inherit; font-size: 15px; padding-bottom: 5px; padding-top: 5px; text-align: center;">
+                                                                <table cellpadding="0" cellspacing="0" role="presentation" style="mso-table-lspace: 0pt; mso-table-rspace: 0pt;" width="100%">
+                                                                    <tbody>
+                                                                        <tr>
+                                                                            <td class="alignment" style="vertical-align: middle; text-align: center;">
+                                                                                <!--[if vml]><table align="left" cellpadding="0" cellspacing="0" role="presentation" style="display:inline-block;padding-left:0px;padding-right:0px;mso-table-lspace: 0pt;mso-table-rspace: 0pt;"><![endif]-->
+                                                                                <!--[if !vml]><!-->
+                                                                                <table cellpadding="0" cellspacing="0" class="icons-inner" role="presentation" style="mso-table-lspace: 0pt; mso-table-rspace: 0pt; display: inline-block; margin-right: -4px; padding-left: 0px; padding-right: 0px;">
+                                                                                    <!--<![endif]-->
+                                                                                    <tbody>
+                                                                                        <tr>
+                                                                                        </tr>
+                                                                                    </tbody>
+                                                                                </table>
+                                                                            </td>
+                                                                        </tr>
+                                                                    </tbody>
+                                                                </table>
+                                                            </td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </td>
+        </tr>
+      </tbody>
+    </table>
+    <!-- End -->
+   </body>
+   </div>
+   </body>
+</html>        
+''', subtype='html')
+    
+    #Add SSL
+    context = ssl.create_default_context()
+         
+    # Email Condition
+    if rainChance != 0:
+        with smtplib.SMTP_SSL('smtp.gmail.com', 465, context=context) as smtp:
+            smtp.set_debuglevel(1)
+            smtp.login(email_sender, email_password)
+            smtp.sendmail(email_sender, email_receiver, em.as_string())
+    
+    return {
+        'statusCode': 200,
+        'body': json.dumps('Hello from Lambda!')
+    }
